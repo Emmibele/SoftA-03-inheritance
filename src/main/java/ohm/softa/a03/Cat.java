@@ -6,13 +6,19 @@ import org.apache.logging.log4j.Logger;
 import static ohm.softa.a03.Cat.State.*;
 
 public class Cat {
+	//TODO remove
 	private static final Logger logger = LogManager.getLogger();
 
+	//TODO remove
 	// valid states
 	public enum State {SLEEPING, HUNGRY, DIGESTING, PLAYFUL, DEAD}
 
+	//TODO remove
 	// initially, animals are sleeping
 	private State state = State.SLEEPING;
+
+	// initially, animals are sleeping
+	private ohm.softa.a03.State currentState;
 
 	// state durations (set via constructor), ie. the number of ticks in each state
 	private final int sleep;
@@ -29,8 +35,10 @@ public class Cat {
 		this.sleep = sleep;
 		this.awake = awake;
 		this.digest = digest;
+		currentState = new SleepingState(sleep);
 	}
 
+	//TODO rework for new Logic
 	public void tick(){
 		logger.info("tick()");
 		time = time + 1;
@@ -77,6 +85,7 @@ public class Cat {
 	/**
 	 * This would be a user interaction: feed the cat to change its state!
 	 */
+	//TODO rework for new Logic
 	public void feed(){
 		if (!isHungry())
 			throw new IllegalStateException("Can't stuff a cat...");
@@ -89,23 +98,24 @@ public class Cat {
 	}
 
 	public boolean isAsleep() {
-		return state.equals(State.SLEEPING);
+		return currentState instanceof SleepingState;
 	}
 
 	public boolean isPlayful() {
-		return state.equals(State.PLAYFUL);
+		return currentState instanceof PlayfulState;
+
 	}
 
 	public boolean isHungry() {
-		return state.equals(State.HUNGRY);
+		return currentState instanceof HungryState;
 	}
 
 	public boolean isDigesting() {
-		return state.equals(State.DIGESTING);
+		return currentState instanceof DigestingState;
 	}
 
 	public boolean isDead() {
-		return state == State.DEAD;
+		return currentState instanceof DeathState;
 	}
 
 	@Override
