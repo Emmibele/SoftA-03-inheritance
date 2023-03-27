@@ -11,16 +11,24 @@ public abstract class State {
         return time;
     }
 
-    private int finalDuration; //but what's it doing
+    private final int duration;
     public int getDuration(){
-        return finalDuration;
+        return duration;
     }
 
     public State(int duration){
-        finalDuration = duration;
+        this.duration = duration;
+        
     }
+
     final State tick (Cat cat){
-        return null;
+        time ++;
+        if (time >= duration)
+        {
+            return successor(cat);
+        }
+        return this;
     }
+
     abstract State successor(Cat cat);
 }

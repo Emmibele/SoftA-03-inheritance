@@ -1,23 +1,7 @@
 package ohm.softa.a03;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import static ohm.softa.a03.Cat.State.*;
-
 public class Cat {
-	//TODO remove
-	private static final Logger logger = LogManager.getLogger();
 
-	//TODO remove
-	// valid states
-	public enum State {SLEEPING, HUNGRY, DIGESTING, PLAYFUL, DEAD}
-
-	//TODO remove
-	// initially, animals are sleeping
-	private State state = State.SLEEPING;
-
-	// initially, animals are sleeping
 	private ohm.softa.a03.State currentState;
 
 	// state durations (set via constructor), ie. the number of ticks in each state
@@ -26,10 +10,7 @@ public class Cat {
 	private final int digest;
 
 	private final String name;
-
-	private int time = 0;
-	private int timeDigesting = 0;
-
+	
 	public Cat(String name, int sleep, int awake, int digest) {
 		this.name = name;
 		this.sleep = sleep;
@@ -38,63 +19,20 @@ public class Cat {
 		currentState = new SleepingState(sleep);
 	}
 
-	//TODO rework for new Logic
 	public void tick(){
-		logger.info("tick()");
-		time = time + 1;
-
-		switch (state) {
-			case SLEEPING:
-				if (time == sleep) {
-					logger.info("Yoan... getting hungry!");
-					state = HUNGRY;
-					time = 0;
-				}
-				break;
-			case HUNGRY:
-				if(time == awake){
-					logger.info("I've starved for a too long time...good bye...");
-					state = DEAD;
-				}
-				break;
-			case DIGESTING:
-				timeDigesting = timeDigesting + 1;
-				if (timeDigesting == digest) {
-					logger.info("Getting in a playful mood!");
-					state = PLAYFUL;
-				}
-				break;
-			case PLAYFUL:
-				if (time >= awake) {
-					logger.info("Yoan... getting tired!");
-					state = SLEEPING;
-					time = 0;
-				}
-				break;
-
-			case DEAD:
-				break;
-			default:
-				throw new IllegalStateException("Unknown cat state " + state.name());
-		}
-
-		logger.info(state.name());
-
+		currentState = currentState.tick(this);
 	}
 
 	/**
 	 * This would be a user interaction: feed the cat to change its state!
 	 */
-	//TODO rework for new Logic
 	public void feed(){
-		if (!isHungry())
+		if (currentState instanceof HungryState){
+			currentState = ((HungryState)currentState).feed(this);
+		}
+		else{
 			throw new IllegalStateException("Can't stuff a cat...");
-
-		logger.info("You feed the cat...");
-
-		// change state and reset the timer
-		state = State.DIGESTING;
-		timeDigesting = 0;
+		}
 	}
 
 	public boolean isAsleep() {
@@ -116,6 +54,18 @@ public class Cat {
 
 	public boolean isDead() {
 		return currentState instanceof DeathState;
+	}
+
+	public int getSleep(){
+		return sleep;
+	}
+
+	public int getDigest(){
+		return digest;
+	}
+
+	public int getAwake(){
+		return awake;
 	}
 
 	@Override
