@@ -27,12 +27,11 @@ public class Cat {
 	 * This would be a user interaction: feed the cat to change its state!
 	 */
 	public void feed(){
-		if (currentState instanceof HungryState){
-			currentState = ((HungryState)currentState).feed(this);
-		}
-		else{
+		if (!(currentState instanceof HungryState))
 			throw new IllegalStateException("Can't stuff a cat...");
-		}
+
+			currentState = ((HungryState)currentState).feed(this);
+
 	}
 
 	public boolean isAsleep() {

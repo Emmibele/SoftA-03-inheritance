@@ -7,6 +7,6 @@ public class DeathState extends State{
     }
     @Override
     State successor(Cat cat) {
-        return null;
+        return this;
     }
 }
